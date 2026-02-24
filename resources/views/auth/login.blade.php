@@ -11,7 +11,7 @@
                 <div class="login-container">
                     <img src="{{ asset('images/logo-demo.png') }}" alt="Logo" class="img-fluid" style="max-width: 150px;">
                     <hr>
-                    <h2>Bienvenidos!</h2>
+                    <h2>Bienvenid@s!</h2>
                     <p>Inicia sesión con tu cuenta y comienza la aventura.</p>
 
                     @if(session('error'))
