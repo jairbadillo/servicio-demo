@@ -32,7 +32,7 @@ Route::middleware(['auth','verified'])->group(function () {
 
 // JB - Historial de todo los registro cargados en el sistema.
 Route::middleware(['auth','verified'])->group(function () {
-    Route::get('/register/loghistory', [RegisterController::class, 'loghistory'])->name('register.loghistory');
+    Route::get('/register/{anio?}/loghistory', [RegisterController::class, 'loghistory'])->name('register.loghistory');
 });
 
 Route::middleware('auth')->group(function () {

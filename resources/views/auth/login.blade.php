@@ -5,11 +5,14 @@
     <div class="container-fluid">
         <div class="row" style="height: 100vh;">
             <div class="left-section col-12 col-sm-12 col-lg-6">
-                <h1>Bienvenido a nuestro sistema.........</h1>
+                <img src="{{ $imgFondo }}" alt="Fondo" class="imagen-fondo">
+                <div class="contenido-encima">
+                    <h1>Bienvenido a nuestro sistema.........</h1>
+                </div>
             </div>
             <div class="right-section col-12 col-sm-12 col-lg-6">
                 <div class="login-container">
-                    <img src="{{ asset('images/logo-demo.png') }}" alt="Logo" class="img-fluid" style="max-width: 150px;">
+                    <img src="{{ $imgLogo }}" alt="Logo" class="img-fluid">
                     <hr>
                     <h2>Bienvenid@s!</h2>
                     <p>Inicia sesión con tu cuenta y comienza la aventura.</p>
@@ -23,7 +26,7 @@
                     <form method="POST" action="{{ route('login') }}">
                         @csrf
 
-                        <input type="text" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus placeholder="Email">
+                        <input type="text" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus placeholder="Ingresa con: [admin@admin.com]">
                         @error('email')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
@@ -31,7 +34,7 @@
                         @enderror
 
                         <div class="input-group mb-3">
-                            <input type="password" class="form-control mb-0 @error('password') is-invalid @enderror" id="password" name="password" required autocomplete="current-password" placeholder="Password">
+                            <input type="password" class="form-control mb-0 @error('password') is-invalid @enderror" id="password" name="password" required autocomplete="current-password" placeholder="Ingresa con: [Admin123]">
                             <button class="btn btn-outline-secondary" type="button" id="togglePassword">
                                 <i class="bi bi-eye-slash-fill"></i>
                             </button>
@@ -42,21 +45,25 @@
                             @enderror
                         </div>
 
-                        <div class="remember-me mb-3">
-                            <label>
-                                <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}> Recuérdame
-                            </label>
-                        </div>
-
+                        @env('local')
+                            <div class="remember-me mb-3">
+                                <label>
+                                    <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}> Recuérdame
+                                </label>
+                            </div>
+                        @endenv
+                        
                         <button type="submit" class="btn btn-login">LOGIN</button>
 
                         <div class="forgot-password">
                             <a href="{{ route('password.request') }}">¿Olvidó su contraseña?</a>
                         </div>
 
-                        {{-- <div class="create-account">
-                            Eres nuevo? <a href="{{ route('register') }}">Cree una cuenta</a>
-                        </div> --}}
+                        @env('local')
+                            <div class="create-account">
+                                Eres nuevo? <a href="{{ route('register') }}">Cree una cuenta</a>
+                            </div>
+                        @endenv
                     </form>
                 </div>
             </div>
@@ -65,8 +72,8 @@
 @endsection
 
 
-
-{{-- <x-guest-layout>
+{{--
+<x-guest-layout>
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
@@ -112,4 +119,5 @@
             </x-primary-button>
         </div>
     </form>
-</x-guest-layout> --}}
+</x-guest-layout>
+--}}

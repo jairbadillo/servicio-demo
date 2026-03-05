@@ -20,7 +20,7 @@
         <div class="min-vh-100 bg-light">
             @include('layouts.navigation')
 
-            <header class="bg-white shadow-sm">
+            <header class="bg-white shadow-sm ui-header">
                 <div class="container-fluid py-2 mb-4">
                     @yield('header')
                 </div>
@@ -44,5 +44,15 @@
                 {{ $slot }}
             </main> --}}
         </div>
+        
+        @stack('scripts')
+
+        @if(session('swal'))
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    Swal.fire(@json(session('swal')));
+                });
+            </script>
+        @endif
     </body>
 </html>

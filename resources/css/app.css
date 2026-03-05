@@ -1,3 +1,29 @@
 @import 'bootstrap-icons/font/bootstrap-icons.css';
 @import 'bootstrap';
 @import './login.css';
+
+.bg-light { background-color: rgb(230, 235, 238) !important; }
+
+.table-striped {
+  /* Cambia el color a un gris más visible (ejemplo: #e9ecef o #ddd) */
+  --bs-table-striped-bg: rgba(0, 0, 0, 0.1) !important; 
+}
+
+.navbar {
+  background: linear-gradient(90deg, #0f2340, #1a3a6b);
+  border-bottom: 2px solid #c9aa71;
+  padding: 0 32px; height: 64px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.dropdown-menu { padding: 0px;}
+.brand { display: flex; align-items: center; gap: 12px; }
+.logo { width: 40px; height: 40px; border-radius: 8px; background: #c9aa71; display: flex; align-items: center; justify-content: center; color: #0f2340; font-weight: 800; font-size: 14px; }
+.nav-links { display: flex; gap: 0; }
+.nav-links .navbar-nav li a { color: rgba(255,255,255,0.6); font-size: 14px; text-decoration: none; padding: 8px 20px; border-bottom: 3px solid transparent; margin-bottom: -2px; }
+.nav-links .navbar-nav li a.active { color: #c9aa71; border-bottom-color: #c9aa71; }
+.nav-links .navbar-nav .nav-item .dropdown-toggle  { background: rgba(201,170,113,0.15); border: 1px solid #c9aa71; color: #c9aa71; padding: 6px 16px; border-radius: 4px; font-size: 13px; }
+.nav-links .navbar-nav .nav-item .dropdown-menu .dropdown-item { background: rgba(201,170,113,0.15); border: 1px solid #c9aa71; color: #c9aa71; padding: 5px; border-radius: 4px 4px 0px 0px; font-size: 13px; text-align: center;}
+.nav-links .navbar-nav .nav-item .dropdown-menu .logout { background: rgba(201,170,113,0.15); border: 1px solid #c9aa71; color: #c9aa71; padding: 5px; margin-top: 3px; border-radius: 0px 0px 4px 4px; font-size: 13px; text-align: center;}
+
+.ui-header { background: linear-gradient(90deg, #0f2340, #1a3a6b); border-top: 1px solid #c9aa71; }
+.font-semibold { color: #c9aa71; border-bottom-color: #c9aa71; }

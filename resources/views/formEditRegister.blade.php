@@ -25,14 +25,14 @@
                         @enderror
                     </div>
                     <div class="form-floating form-floating-outline mb-4">
-                        <input type="date" class="form-control" id="date_expiration" name="date_expiration" placeholder="Fecha de vencimiento..." value="{{ $registers->date_expiration }}"/>
-                        <label for="date_expiration">Fecha de Vencimiento</label>
+                        <input type="date" class="form-control" id="date_expiration" name="date_expiration" placeholder="Fecha de vencimiento..." value="{{ $registers->date_expiration_formatted }}"/>
+                        <label for="date_expiration">Saldo</label>
                         @error('date_expiration')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
                     </div>
                     <div class="form-floating form-floating-outline mb-4">
-                        <input type="number" class="form-control" id="balance" name="balance" placeholder="Saldo..." value="{{ $registers->balance }}"/>
+                        <input type="number" step="0.01" class="form-control" id="balance" name="balance" placeholder="Saldo..." value="{{ $registers->balance }}"/>
                         <label for="balance">Saldo</label>
                         @error('balance')
                             <div class="text-danger">{{ $message }}</div>

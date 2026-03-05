@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Register;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class RegisterController extends Controller
 {
@@ -12,24 +14,46 @@ class RegisterController extends Controller
      */
     public function index()
     {
-        // $dato = 'Paso 2';
-        // return view('register', ['registers' => $dato]);
 
-        $maxDate = Register::selectRaw('MAX(date_expiration) as max_date')->value('max_date');
+        Carbon::setLocale('es');
 
-        $maxMonth = date('m', strtotime($maxDate));
-        $maxYear = date('Y', strtotime($maxDate));
+        // 1. Obtener la última fecha registrada (solo el campo necesario)
+        $fechaDb = Register::latest('date_expiration')
+            ->select('date_expiration')
+            ->first();
 
-        $registers = Register::select('id', 'name', 'date_expiration', 'balance', 'status')
-                            ->selectRaw('MONTHNAME(date_expiration) as date_name')
-                            ->whereMonth('date_expiration', $maxMonth)
-                            ->whereYear('date_expiration', $maxYear)
+        if (!$fechaDb) {
+            return view('register', [
+                'registers' => collect(),
+                'totalBalance' => 0,
+                'mesEspanol' => null
+            ]);
+        }
+
+        // 2. Mes en español (primera letra mayúscula)
+        $mesEspanol = Str::ucfirst(
+            $fechaDb->date_expiration->translatedFormat('F')
+        );
+
+        // 3. Rango del mes (usa índice)
+        $inicioMes = $fechaDb->date_expiration->copy()->startOfMonth();
+        $finMes = $fechaDb->date_expiration->copy()->endOfMonth();
+
+        // 4. Obtener registros del mes
+        $registers = Register::select('id','name','date_expiration','balance','status')
+                            ->whereBetween('date_expiration', [$inicioMes, $finMes])
+                            ->orderBy('date_expiration')
                             ->get();
 
-        $totalBalance = $registers->where('status', '!=', 're')
-                                ->sum('balance');
+        // 5. Total optimizado (calculado en BD)
+        $sumarBalance = Register::whereBetween('date_expiration', [$inicioMes, $finMes])
+                            ->where('status', '!=', 're')
+                            ->sum('balance');
 
-        return view('register', compact('registers', 'totalBalance'));
+        $totalBalance = number_format($sumarBalance, 2, ',', '.');
+
+        // 6. Vista
+        return view('register', compact('registers', 'totalBalance', 'mesEspanol'));
     }
 
     /**
@@ -46,23 +70,29 @@ class RegisterController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required',
-            'date_expiration' => 'required',
-            'balance' => 'required',
+            'name' => 'required|string|max:255',
+            'date_expiration' => 'required|date',
+            'balance' => 'required|numeric|min:0|max:99999999.99',
             'status' => 'required|not_in:ninguno'
         ],
         [
-            'name.required' => 'El campo nombre es requerido.',
-            'date_expiration.required' => 'El campo fecha de vencimiento es requerido.',
-            'balance.required' => 'Debes colocar algun saldo.',
-            'status.required' => 'Debes seleccionar una opción válida.',
-            'status.not_in' => 'La opción seleccionada no es válida.',
+            'name.required'             => 'El campo nombre es requerido.',
+            'date_expiration.required'  => 'El campo fecha de vencimiento es requerido.',
+            'balance.required'          => 'Debes colocar algún saldo.',
+            'balance.min'               => 'El saldo no puede ser negativo.',
+            'balance.max'               => 'El saldo no puede superar 99,999,999.99',
+            'status.required'           => 'Debes seleccionar una opción válida.',
+            'status.not_in'             => 'La opción seleccionada no es válida.',
         ]);
 
         Register::create($validated);
 
         return redirect()->route('dashboard')
-                            ->with('success', 'Registro creado exitosamente');
+                            ->with('swal', [
+                                'icon'  => 'success',
+                                'title' => '¡Correcto!',
+                                'text'  => 'Registro creado exitosamente.',
+                            ]);
     }
 
         /**
@@ -70,28 +100,30 @@ class RegisterController extends Controller
      */
     public function duplicate()
     {
+        // 1. Obtener la última fecha registrada
+        $fechaDb = Register::latest('date_expiration')
+            ->select('date_expiration')
+            ->first();
 
-        // Subconsulta para obtener la fecha de expiración más reciente
-        $maxDate = Register::selectRaw('MAX(date_expiration) as max_date')->value('max_date');
+        // 2. Rango del mes más reciente
+        $inicioMes = $fechaDb->date_expiration->copy()->startOfMonth();
+        $finMes = $fechaDb->date_expiration->copy()->endOfMonth();
 
-        // Extraer el mes y año de la fecha más reciente
-        $maxMonth = date('m', strtotime($maxDate));
-        $maxYear = date('Y', strtotime($maxDate));
-
-        // Consulta principal
-        $duplicados = Register::select('name', 'balance')
-                            ->selectRaw("DATE_ADD(date_expiration, INTERVAL 1 MONTH) as date_expiration") // Aplicar DATE_ADD
-                            ->selectRaw("'pe' as status") // Agregar el campo "status" con valor fijo
-                            ->whereMonth('date_expiration', $maxMonth) // Filtrar por mes
-                            ->whereYear('date_expiration', $maxYear)   // Filtrar por año
-                            ->get();
-
-        // Conversión a array: La colección se convierte a un array de arrays usando toArray().
-        // Insertar datos: El método insert() recibe un array de arrays y los inserta en la tabla.
-        Register::insert($duplicados->toArray());
+        // 3. Duplicar registros sumándoles un mes
+        Register::insertUsing(
+            ['name', 'balance', 'date_expiration', 'status'],
+            Register::select('name', 'balance')
+                ->selectRaw("DATE_ADD(date_expiration, INTERVAL 1 MONTH)")
+                ->selectRaw("'pe'")
+                ->whereBetween('date_expiration', [$inicioMes, $finMes])
+        );
 
         return redirect()->route('dashboard')
-                            ->with('success', 'Se duplicaron los registros con éxito');
+                            ->with('swal', [
+                                'icon'  => 'success',
+                                'title' => '¡Correcto!',
+                                'text'  => 'Registro duplicado con éxíto.',
+                            ]);
     }
 
     /**
@@ -128,7 +160,11 @@ class RegisterController extends Controller
         $registers->update($request->all());
 
         return redirect()->route('dashboard')
-                            ->with('success', 'Registro modificado exitosamente');
+                            ->with('swal', [
+                                'icon'  => 'success',
+                                'title' => '¡Correcto!',
+                                'text'  => 'Registro modificado exitosamente.',
+                            ]);
     }
 
     /**
@@ -141,7 +177,11 @@ class RegisterController extends Controller
             $registers->delete();
     
             return redirect()->route('dashboard')
-                                ->with('success', 'Registro eliminado exitosamente');
+                                ->with('swal', [
+                                    'icon'  => 'success',
+                                    'title' => '¡Eliminado!',
+                                    'text'  => 'Registro eliminado exitosamente.',
+                                ]);
         }
     }
 
@@ -163,17 +203,49 @@ class RegisterController extends Controller
             $registers->each->delete();
     
             return redirect()->route('dashboard')
-                                ->with('success', 'Registros eliminados exitosamente');
+                                ->with('swal', [
+                                    'icon'  => 'success',
+                                    'title' => '¡Eliminado!',
+                                    'text'  => 'Registro eliminado exitosamente.',
+                                ]);
         }
     }
 
     /**
      * History resource from storage.
      */
-    public function loghistory()
+    public function loghistory($anio = null)
     {
-        $registers = Register::orderBy('date_expiration', 'desc')->get();
+        $year = $anio ?? now()->year;
 
-        return view('logHistory', compact('registers'));
+        $registers = Register::whereYear('date_expiration', $year)
+            ->orderBy('date_expiration', 'desc')
+            ->get()
+            ->groupBy(fn($r) => Carbon::parse($r->date_expiration)->format('Y-m'));
+
+        $monthlyTotals = Register::selectRaw("
+                DATE_FORMAT(date_expiration, '%Y-%m') as month,
+                SUM(balance) as total_balance,
+                COUNT(*) as total_records
+            ")
+            ->whereYear('date_expiration', $year)
+            ->groupByRaw("DATE_FORMAT(date_expiration, '%Y-%m')")
+            ->orderBy('month', 'desc')
+            ->get()
+            ->keyBy('month');
+
+        $availableYears = Register::selectRaw('YEAR(date_expiration) as year')
+            ->distinct()
+            ->orderBy('year', 'desc')
+            ->pluck('year');
+
+        // Preparamos los labels de mes ya formateados para no usar Carbon en la vista
+        $monthLabels = $registers->keys()->mapWithKeys(fn($month) => [
+            $month => Carbon::createFromFormat('Y-m', $month)
+                        ->locale('es')
+                        ->translatedFormat('F Y')
+        ]);
+
+        return view('logHistory', compact('registers', 'monthlyTotals', 'availableYears', 'year', 'monthLabels'));
     }
 }

@@ -19,6 +19,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        view()->share([
+            'imgFondo' => asset('images/fondo-login.png'),
+            'imgLogo'  => asset('images/logo-demo.png'),
+        ]);
     }
 }

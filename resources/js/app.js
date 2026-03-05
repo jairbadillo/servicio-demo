@@ -10,6 +10,11 @@ import './login';
 import './bootstrap'; // Si esto carga Alpine.js (verifica tu archivo resources/js/bootstrap.js)
 import Alpine from 'alpinejs';
 
+import Swal from 'sweetalert2';
+ 
+// Disponible globalmente en todos los Blade
+window.Swal = Swal;
+
 // Inicializar Alpine.js
 window.Alpine = Alpine;
 Alpine.start();

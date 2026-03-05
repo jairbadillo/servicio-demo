@@ -7,7 +7,7 @@
             style="background-color: rgba(255, 255, 255, 0.9); border-radius: 15px;">
             <div class="card-body p-4">
                 <div class="text-center mb-4">
-                    <img src="{{ asset('images/logo-demo.png') }}" alt="Logo" class="img-fluid mb-3" style="max-width: 120px;">
+                    <img src="{{ $imgLogo }}" alt="Logo" class="img-fluid mb-3" style="max-width: 120px;">
                     <h5 class="card-title">{{ __('Restablecer Contraseña') }}</h5>
                     <p class="card-text">{{ __('Ingresa tu nueva contraseña.') }}</p>
                 </div>

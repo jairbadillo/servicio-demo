@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Register;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 /**
  * JB - Seeder de registros default para la demo.
@@ -19,6 +20,7 @@ class RegisterSeeder extends Seeder
 {
     public function run(): void
     {
+        DB::statement('ALTER TABLE registers AUTO_INCREMENT = 16');
         $mes = now()->format('Y-m');
 
         // Borra todos los registros actuales antes de insertar los default.
@@ -58,6 +60,8 @@ class RegisterSeeder extends Seeder
      */
     public static function resetDemoData(): void
     {
+        DB::statement('ALTER TABLE registers AUTO_INCREMENT = 16');
+        
         $mes = now()->format('Y-m');
 
         Register::truncate();

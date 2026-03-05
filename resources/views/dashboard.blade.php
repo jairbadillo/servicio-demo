@@ -11,22 +11,22 @@
 @section('layoutContent')
 
     @if (request()->routeIs('dashboard'))
-        @if(session('success'))
+        {{-- @if(session('success'))
             <div id="alertSuccess" class="alert alert-success mx-auto m-4" style="width: 50rem;">
                 {{ session('success') }}
             </div>
-        @endif
+        @endif --}}
 
         <div class="d-flex align-items-center justify-content-between mx-auto rounded shadow mb-4 p-3 col-12 col-md-10 col-lg-6" style="height: 5rem; background-color: white;">
             <form method="POST" action="{{ route('register.duplicate') }}">
                 @csrf
-                <button type="submit" class="btn btn-success" onclick="return confirm('¿Estás seguro de crear los registros del proximo mes?');"><i class="bi bi-calendar2-plus"></i> Crear proximo mes</button>
+                <button type="submit" class="btn btn-success"><i class="bi bi-calendar2-plus"></i> Crear proximo mes</button>
             </form>
 
-            <form method="POST" action="{{ route('register.deletetable') }}">
+            <form id="form-deletetable" method="POST" action="{{ route('register.deletetable') }}">
                 @csrf
                 @method('DELETE')
-                <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro de eliminar los registros del mes presente?');"><i class="bi bi-calendar-x"></i> Eliminar este mes</button>
+                <button type="button" class="btn btn-danger" onclick="confirmarEliminar('{{ $mesEspanol }}')"><i class="bi bi-calendar-x"></i> Eliminar este mes</button>
             </form>
         </div>
     @endif
@@ -73,3 +73,25 @@
     </div>
 @endsection
 
+@push('scripts')
+    <script>
+        function confirmarEliminar(fecha) {
+            Swal.fire({
+                title: '¿Eliminar registro?',
+                text: 'El mes ' + fecha + ' será eliminado permanentemente.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true,
+                focusCancel: true,
+            }).then(result => {
+                if (result.isConfirmed) {
+                    document.getElementById('form-deletetable').submit();
+                }
+            });
+        }
+    </script>
+@endpush

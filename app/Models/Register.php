@@ -13,12 +13,21 @@ class Register extends Model
         'status',
     ];
 
+    protected $casts = [
+        'date_expiration' => 'datetime'
+    ];
+
 
     // Laravel detecta métodos que tengan este patrón:
     // get + Nombre + Attribute
-    // Y crea un atributo virtual automáticamente llamdo en este caso "balance_formatted".
+    // Y crea un atributo virtual automáticamente llamado en este caso "balance_formatted".
     public function getBalanceFormattedAttribute()
     {
-        return number_format($this->balance, 0, ',', '.');
+        return number_format($this->balance, 2, ',', '.');
+    }
+
+    public function getDateExpirationFormattedAttribute()
+    {
+        return $this->date_expiration->format('Y-m-d');
     }
 }

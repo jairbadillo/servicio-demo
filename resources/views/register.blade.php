@@ -1,26 +1,7 @@
 @extends('dashboard')
 
 @section('title-card')
-    @php
-        $meses = [
-            'January' => 'Enero',
-            'February' => 'Febrero',
-            'March' => 'Marzo',
-            'April' => 'Abril',
-            'May' => 'Mayo',
-            'June' => 'Junio',
-            'July' => 'Julio',
-            'August' => 'Agosto',
-            'September' => 'Septiembre',
-            'October' => 'Octubre',
-            'November' => 'Noviembre',
-            'December' => 'Diciembre',
-        ];
-
-        $mes_espanol = $meses[$registers->first()->date_name ?? strftime("%B")];
-
-        echo $mes_espanol;
-    @endphp
+    {{ $mesEspanol }}
 @endsection
 
 @section('registerContent')
@@ -33,7 +14,7 @@
                 {{ $register->name }}
             </td>
             <td class="text-center">
-                {{ $register->date_expiration }}
+                {{ $register->date_expiration_formatted }}
             </td>
             <td>
                 {{ $register->balance_formatted }}
@@ -44,10 +25,10 @@
             <td class="text-center">
                 <div class="btn-group" role="group">
                     <a class="btn btn-success" href="{{ route('register.edit', $register->id) }}" role="button"><i class="bi bi-pencil-fill"></i></a>
-                    <form method="POST" action="{{ route('register.destroy', $register->id) }}" style="margin-left: -4px;">
+                    <form id="form-delete-{{ $register->id }}" method="POST" action="{{ route('register.destroy', $register->id) }}" style="margin-left: -4px;">
                         @method('DELETE')
                         @csrf
-                        <button type="submit" class="btn btn-danger" style="padding-left: 16px;" onclick="return confirm('¿Estás seguro de eliminar este registro?');"><i class="bi bi-trash3-fill"></i></button>
+                        <button type="button" class="btn btn-danger" style="padding-left: 16px;" onclick="confirmarUnaEliminar('{{ $register->id }}', '{{ $register->name }}')"><i class="bi bi-trash3-fill"></i></button>
                     </form>
                 </div>
             </td>
@@ -61,7 +42,30 @@
             <strong>Total</strong>
         </td>
         <td class="text-end">
-            <strong>{{ number_format($totalBalance, 0, ',', '.') }}</strong>
+            <strong>{{ $totalBalance }}</strong>
         </td>
     </tr>
 @endsection
+
+@push('scripts')
+    <script>
+        function confirmarUnaEliminar(id, name) {
+            Swal.fire({
+                title: '¿Eliminar registro?',
+                text: 'El servicio ' + name + ' será eliminado permanentemente.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true,
+                focusCancel: true,
+            }).then(result => {
+                if (result.isConfirmed) {
+                    document.getElementById('form-delete-' + id).submit();
+                }
+            });
+        }
+    </script>
+@endpush

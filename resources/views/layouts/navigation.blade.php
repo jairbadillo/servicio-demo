@@ -1,8 +1,8 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
-    <div class="container-fluid">
+<nav class="navbar navbar-expand-lg navbar-light bg-white">
+    <div class="container-fluid brand">
         <!-- Logo -->
         <a class="navbar-brand" href="{{ route('dashboard') }}">
-            <img src="{{ asset('images/logo-demo.png') }}" alt="Logo" class="d-inline-block align-text-top" style="height: 36px;">
+            <img src="{{ $imgLogo }}" alt="Logo" class="d-inline-block align-text-top" style="height: 36px;">
         </a>
 
         <!-- Toggler Button (Hamburger) -->
@@ -11,7 +11,7 @@
         </button>
 
         <!-- Navigation Links -->
-        <div class="collapse navbar-collapse" id="navbarNav">
+        <div class="nav-links collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 d-flex flex-row">
                 <li class="nav-item me-2">
                     <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
@@ -20,7 +20,7 @@
                 </li>
                 <li><div class="nav-link fw-bold me-2">|</div></li>
                 <li>
-                    <a class="nav-link {{ request()->routeIs('register.loghistory') ? 'active' : '' }}" href="{{ route('register.loghistory') }}"> {{ __('Historial') }}</a>
+                    <a class="nav-link {{ request()->routeIs('register.loghistory') ? 'active' : '' }}" href="{{ route('register.loghistory', now()->year) }}"> {{ __('Historial') }}</a>
                 </li>
             </ul>
 
@@ -33,14 +33,14 @@
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                         <li>
                             <a class="dropdown-item" href="{{ route('profile.edit') }}">
-                                {{ __('Profile') }}
+                                {{ __('Perfil') }}
                             </a>
                         </li>
                         <li>
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
-                                <button type="submit" class="dropdown-item">
-                                    {{ __('Log Out') }}
+                                <button type="submit" class="dropdown-item logout">
+                                    {{ __('LogOut') }}
                                 </button>
                             </form>
                         </li>
