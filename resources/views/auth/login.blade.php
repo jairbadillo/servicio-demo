@@ -26,7 +26,17 @@
                     <form method="POST" action="{{ route('login') }}">
                         @csrf
 
-                        <input type="text" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus placeholder="Ingresa con: [admin@admin.com]">
+                        @php
+                            $placeholderEmail = app()->environment(['local', 'demo'])
+                                ? 'Ingresa con: [admin@admin.com]'
+                                : 'Ingrese su email...';
+
+                            $placeholderPass = app()->environment(['local', 'demo'])
+                                ? 'Ingresa con: [Admin123]'
+                                : 'Ingrese su password...';
+                        @endphp
+
+                        <input type="text" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus placeholder="{{ $placeholderEmail }}">
                         @error('email')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
@@ -34,7 +44,7 @@
                         @enderror
 
                         <div class="input-group mb-3">
-                            <input type="password" class="form-control mb-0 @error('password') is-invalid @enderror" id="password" name="password" required autocomplete="current-password" placeholder="Ingresa con: [Admin123]">
+                            <input type="password" class="form-control mb-0 @error('password') is-invalid @enderror" id="password" name="password" required autocomplete="current-password" placeholder="{{ $placeholderPass }}">
                             <button class="btn btn-outline-secondary" type="button" id="togglePassword">
                                 <i class="bi bi-eye-slash-fill"></i>
                             </button>
