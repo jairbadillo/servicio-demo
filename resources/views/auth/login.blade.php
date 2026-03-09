@@ -45,7 +45,7 @@
                             @enderror
                         </div>
 
-                        @env('local')
+                        @env(['local', 'demo'])
                             <div class="remember-me mb-3">
                                 <label>
                                     <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}> Recuérdame
