@@ -51,7 +51,6 @@
 
 @push('scripts')
     <script>
-        console.log(this.value);
         document.getElementById('year_select').addEventListener('change', function () {
             window.location.href = "{{ url('register') }}/" + this.value + "/loghistory";
         });

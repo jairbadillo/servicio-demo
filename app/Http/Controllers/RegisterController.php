@@ -228,6 +228,7 @@ class RegisterController extends Controller
                 SUM(balance) as total_balance,
                 COUNT(*) as total_records
             ")
+            ->where('status', '!=', 're')
             ->whereYear('date_expiration', $year)
             ->groupByRaw("DATE_FORMAT(date_expiration, '%Y-%m')")
             ->orderBy('month', 'desc')
