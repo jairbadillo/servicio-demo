@@ -33,7 +33,10 @@ class AuthenticatedSessionController extends Controller
         // JB - Reset de la BD al hacer login Y al hacer logout.
         // Cubre el caso donde el usuario cierra la web sin hacer logout.
         // Así el próximo usuario siempre entra con los 15 registros default.
-        RegisterSeeder::resetDemoData();
+
+        if (app()->environment(['local', 'demo'])) {
+            RegisterSeeder::resetDemoData();
+        }
         
         return redirect()->intended(route('dashboard', absolute: false));
     }
@@ -62,7 +65,9 @@ class AuthenticatedSessionController extends Controller
 
         // Reset de la BD al hacer logout
         // Borra todo y vuelve a cargar los 15 registros default
-        RegisterSeeder::resetDemoData();
+        if (app()->environment(['local', 'demo'])) {
+            RegisterSeeder::resetDemoData();
+        }
 
         return redirect('/');
     }
