@@ -21,14 +21,14 @@ class AppServiceProvider extends ServiceProvider
     {
         if (app()->environment(['local', 'demo'])) {
             view()->share([
-                'imgFondo' => asset('images/fondo-login-demo.png'),
-                'imgLogo'  => asset('images/logo-demo.png'),
+                'imgFondo' => asset('images/Fondo-login-demo.png'),
+                'imgLogo'  => asset('images/Logo-demo.png'),
             ]);
 
         } else {
             view()->share([
-                'imgFondo' => asset('images/fondo-login-prod.png'),
-                'imgLogo'  => asset('images/logo-prod.png'),
+                'imgFondo' => asset('images/Fondo-login-prod.png'),
+                'imgLogo'  => asset('images/Logo-prod.png'),
             ]);
         }
     }
