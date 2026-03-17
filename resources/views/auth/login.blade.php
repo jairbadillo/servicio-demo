@@ -65,9 +65,11 @@
                         
                         <button type="submit" class="btn btn-login">LOGIN</button>
 
-                        <div class="forgot-password">
-                            <a href="{{ route('password.request') }}">¿Olvidó su contraseña?</a>
-                        </div>
+                        @env(['local', 'production'])
+                            <div class="forgot-password">
+                                <a href="{{ route('password.request') }}">¿Olvidó su contraseña?</a>
+                            </div>
+                        @endenv
 
                         @env('local')
                             <div class="create-account">
